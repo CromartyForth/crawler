@@ -14,6 +14,16 @@ func TestGetHeadingFromHTMLBasic(t *testing.T) {
 	}
 }
 
+func TestGetHeadingFromHTMLNone(t *testing.T) {
+	inputBody := "<html><body>no title just straight into a block of text, rude!!</body></html>"
+	actual := getHeadingFromHTML(inputBody)
+	expected := ""
+
+	if actual != expected {
+		t.Errorf("expected %q, got %q", expected, actual)
+	}
+}
+
 func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 	inputBody := `<html><body>
 		<p>Outside paragraph.</p>
@@ -23,6 +33,21 @@ func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 	</body></html>`
 	actual := getFirstParagraphFromHTML(inputBody)
 	expected := "Main paragraph."
+
+	if actual != expected {
+		t.Errorf("expected %q, got %q", expected, actual)
+	}
+}
+
+func TestGetFirstParagraphFromHTMLMainFallback(t *testing.T) {
+	inputBody := `<html><body>
+		<p>Outside paragraph.</p>
+		<div>
+			<div>no Wain paragraph.</div>
+		</div>
+	</body></html>`
+	actual := getFirstParagraphFromHTML(inputBody)
+	expected := "Outside paragraph."
 
 	if actual != expected {
 		t.Errorf("expected %q, got %q", expected, actual)
