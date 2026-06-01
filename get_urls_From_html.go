@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	// "fmt"
 	"net/url"
 	"strings"
 
@@ -17,7 +15,7 @@ func getURLsFromHTML(input string, baseURL *url.URL ) ([]string, error) {
 	// make a goquery document
 	htmldoc, err := goquery.NewDocumentFromReader(strings.NewReader(input))
 	if err != nil {
-		log.Fatal(err)
+		return []string{}, fmt.Errorf("Error making goquery document: %v", err)
 	}
 
 	// Find method returns a selection type?
@@ -33,7 +31,5 @@ func getURLsFromHTML(input string, baseURL *url.URL ) ([]string, error) {
 			foundURLs = append(foundURLs, attr)
 		}
 	})
-
-
 	return foundURLs, nil
 }
