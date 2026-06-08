@@ -16,15 +16,12 @@ func main() {
 		os.Exit(1)
 	} 
 	baseURL := os.Args[1]
-
 	fmt.Printf("starting crawl of: %v\n",baseURL)
 
-	http, err := getHTML(baseURL)
-	if err != nil{
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// make pages map
+	pages := make(map[string]int)
 
-	fmt.Println(http)
+	crawlPage(baseURL, baseURL, pages)
+
 	os.Exit(0)
 }
