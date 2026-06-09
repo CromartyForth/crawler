@@ -27,14 +27,8 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 	}
 
 	// create and or increase page count
-	_, ok := cfg.pages[normURL]
-	if ok {
-		cfg.pages[normURL] += 1
-		fmt.Println("URL already mapped, increasing count")
+	if cfg.addPageVisit(normURL) == false {
 		return
-	} else {
-		cfg.pages[normURL] = 1
-		fmt.Println("URL is new, following link")
 	}
 
 	// get HTML from current url
@@ -55,3 +49,22 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 		cfg.crawlPage(instURL)
 	}
 }
+
+
+
+func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool){
+	
+	cfg.mu.Lock()
+	defer cfg.mu.Unlock()
+	_, ok := cfg.pages[normalizedURL]
+	if ok {
+		cfg.pages[normalizedURL] += 1
+		fmt.Println("URL already mapped, increasing count")
+		return false
+	} else {
+		cfg.pages[normalizedURL] = 1
+		fmt.Println("URL is new, following link")
+		return true
+	}
+}
+
