@@ -26,8 +26,8 @@ func getHTML(rawURL string) (string, error) {
 	 if resp.StatusCode >= 400 {
 		return "", fmt.Errorf("External Error: %v", err)
 	 }
-
-	 if resp.Header.Values("content-type")[0] != "text/html" {
+	 fmt.Printf("content-type: %v", resp.Header.Values("content-type")[0])
+	 if resp.Header.Values("content-type")[0] != "text/html; charset=utf-8" {
 		return "", fmt.Errorf("Response is not a website: %v", err)
 	 }
 
