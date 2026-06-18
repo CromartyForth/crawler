@@ -2,9 +2,10 @@ package main
 	
 import (
 	"os"
-	"net/url"
 	"fmt"
 	"sync"
+	"time"
+	"net/url"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 	myMu := sync.Mutex{}
 
 	// make channel
-	myChan := make(chan struct{})
+	myChan := make(chan struct{}, 1)
 
 	// make wait group
 	myWg := sync.WaitGroup{}
@@ -46,13 +47,17 @@ func main() {
 		concurrencyControl: myChan,
 		wg:&myWg,
 	}
-
-	cfg.crawlPage(os.Args[1])
+	start := time.Now()
+	cfg.wg.Add(1)
+	go cfg.crawlPage(os.Args[1])
 	
+	cfg.wg.Wait()
+	since := time.Since(start)
 
 	// print results
 	for key, value := range cfg.pages {
 		fmt.Printf("Key: %v -- Value: %v\n", key, value)
 	}
+	fmt.Printf("Time taken: %v milliseconds\n", since.Milliseconds())
 	os.Exit(0)
 }

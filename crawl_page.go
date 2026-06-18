@@ -6,6 +6,12 @@ import (
 )
 
 func (cfg *config) crawlPage(rawCurrentURL string){
+	cfg.concurrencyControl <- struct{}{}
+	defer cfg.wg.Done()
+	defer func() {
+		<- cfg.concurrencyControl
+	}()
+
 	fmt.Printf("Processing: %v\n", rawCurrentURL)
 	// is rawCurrent still within rawBaseURL?
 
@@ -46,7 +52,8 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 	}
 
 	for _, instURL := range currentURLs{
-		cfg.crawlPage(instURL)
+		cfg.wg.Add(1)
+		go cfg.crawlPage(instURL)
 	}
 }
 
