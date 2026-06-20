@@ -6,11 +6,17 @@ import (
 )
 
 func (cfg *config) crawlPage(rawCurrentURL string){
+
 	cfg.concurrencyControl <- struct{}{}
 	defer cfg.wg.Done()
 	defer func() {
 		<- cfg.concurrencyControl
 	}()
+
+	if cfg.checkPageLen() == true{
+		fmt.Println("Max page limit reached")
+		return
+	}
 
 	fmt.Printf("Processing: %v\n", rawCurrentURL)
 	// is rawCurrent still within rawBaseURL?
@@ -57,6 +63,14 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 	}
 }
 
+func (cfg *config) checkPageLen() (isTrue bool) {
+	cfg.mu.Lock()
+	defer cfg.mu.Unlock()
+	if len(cfg.pages) >= cfg.maxPages {
+		return true
+	}
+	return false
+}
 
 
 func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool){

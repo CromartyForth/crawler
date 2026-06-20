@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"sync"
 	"time"
+	"strconv"
 	"net/url"
 )
 
 func main() {
 	fmt.Println("Hello, World!")
 
-	if len(os.Args) < 2{
-		fmt.Println("no website provided")
+	if len(os.Args) < 3{
+		fmt.Println("not enough arguments provided")
 		os.Exit(1)
-	} else if len(os.Args) > 2 {
+	} else if len(os.Args) > 4 {
 		fmt.Println("too many arguments provided")
 		os.Exit(1)
 	} 
@@ -33,11 +34,19 @@ func main() {
 	// make mutex
 	myMu := sync.Mutex{}
 
+	maxConcurrency, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+		fmt.Printf("couldn't convert argument to maxConcurrency int: %v", err)
+	}
+
 	// make channel
-	myChan := make(chan struct{}, 1)
+	myChan := make(chan struct{}, maxConcurrency)
 
 	// make wait group
 	myWg := sync.WaitGroup{}
+
+	// make maxPages
+	myMaxPages, err := strconv.Atoi(os.Args[3])
 
 	// Construct cfg
 	cfg := config{
@@ -46,7 +55,9 @@ func main() {
 		mu: &myMu,
 		concurrencyControl: myChan,
 		wg:&myWg,
+		maxPages: myMaxPages,
 	}
+
 	start := time.Now()
 	cfg.wg.Add(1)
 	go cfg.crawlPage(os.Args[1])
