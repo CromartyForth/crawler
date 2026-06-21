@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"fmt"
+	"strings"
 	"net/http"
 )
 
@@ -26,9 +27,10 @@ func getHTML(rawURL string) (string, error) {
 	 if resp.StatusCode >= 400 {
 		return "", fmt.Errorf("External Error: %v", err)
 	 }
-	 fmt.Printf("content-type: %v", resp.Header.Values("content-type")[0])
-	 if resp.Header.Values("content-type")[0] != "text/html; charset=utf-8" {
-		return "", fmt.Errorf("Response is not a website: %v", err)
+	 fmt.Printf("content-type: %v\n", resp.Header.Values("content-type")[0])
+
+	 if !strings.Contains(resp.Header.Values("content-type")[0], "text/html"){
+		return "", fmt.Errorf("Response is not a website: %v\n", err)
 	 }
 
 	 // read body
