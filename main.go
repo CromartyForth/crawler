@@ -22,7 +22,7 @@ func main() {
 	fmt.Printf("starting crawl of: %v\n",os.Args[1])
 	
 	// make pages map
-	myPages := make(map[string]int)
+	myPages := make(map[string]MyPage)
 	
 	// make url.URL
 	myURL, err := url.Parse(os.Args[1])
@@ -67,7 +67,7 @@ func main() {
 
 	// print results
 	for key, value := range cfg.pages {
-		fmt.Printf("Key: %v -- Value: %v\n", key, value)
+		fmt.Printf("Key: %v\n	%+v\n\n", key, value)
 	}
 	fmt.Printf("Time taken: %v milliseconds\n", since.Milliseconds())
 	os.Exit(0)

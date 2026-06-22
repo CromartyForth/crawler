@@ -51,13 +51,13 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 	}
 
 	// get urls from currentHTML
-	currentURLs, err := getURLsFromHTML(currentHTML, cfg.baseURL)
+	outgoingURLs, err := getURLsFromHTML(currentHTML, cfg.baseURL)
 	if err != nil {
 		fmt.Printf("error6: %v", err)
 		return
 	}
 
-	for _, instURL := range currentURLs{
+	for _, instURL := range outgoingURLs{
 		cfg.wg.Add(1)
 		go cfg.crawlPage(instURL)
 	}
@@ -77,14 +77,16 @@ func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool){
 	
 	cfg.mu.Lock()
 	defer cfg.mu.Unlock()
-	_, ok := cfg.pages[normalizedURL]
+	page, ok := cfg.pages[normalizedURL]
 	if ok {
-		cfg.pages[normalizedURL] += 1
+		page.linkCount += 1
 		fmt.Println("URL already mapped, increasing count")
+		cfg.pages[normalizedURL] = page
 		return false
 	} else {
-		cfg.pages[normalizedURL] = 1
+		page := MyPage{linkCount: 1,}
 		fmt.Println("URL is new, following link")
+		cfg.pages[normalizedURL] = page
 		return true
 	}
 }
