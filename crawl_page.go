@@ -57,6 +57,10 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 		return
 	}
 
+	// add page data to record
+	addPageData(page)
+
+
 	for _, instURL := range outgoingURLs{
 		cfg.wg.Add(1)
 		go cfg.crawlPage(instURL)
@@ -89,5 +93,9 @@ func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool){
 		cfg.pages[normalizedURL] = page
 		return true
 	}
+}
+
+func (cfg *config) addPageData(page MyPage) (err error) {
+	return nil
 }
 
