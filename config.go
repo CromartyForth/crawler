@@ -6,7 +6,7 @@ import (
 )
 
 type config struct{
-	pages map[string]MyPage
+	pages map[string]PageData
 	baseURL *url.URL
 	mu *sync.Mutex
 	concurrencyControl chan struct{}
@@ -14,14 +14,6 @@ type config struct{
 	maxPages int
 }
 
-type MyPage struct{
-	URL string
-	Heading string
-	FirstParagraph string
-	OutgoingLinks []string
-	ImageURLs []string
-	linkCount int
-}
 
 
 

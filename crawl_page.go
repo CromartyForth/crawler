@@ -50,18 +50,15 @@ func (cfg *config) crawlPage(rawCurrentURL string){
 		return
 	}
 
-	// get urls from currentHTML
-	outgoingURLs, err := getURLsFromHTML(currentHTML, cfg.baseURL)
+	currentPageData := extractPageData(currentHTML, normURL)
+
+	err = cfg.addPageData(currentPageData)
 	if err != nil {
 		fmt.Printf("error6: %v", err)
-		return
 	}
 
-	// add page data to record
-	addPageData(page)
 
-
-	for _, instURL := range outgoingURLs{
+	for _, instURL := range currentPageData.OutgoingLinks{
 		cfg.wg.Add(1)
 		go cfg.crawlPage(instURL)
 	}
@@ -88,14 +85,19 @@ func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool){
 		cfg.pages[normalizedURL] = page
 		return false
 	} else {
-		page := MyPage{linkCount: 1,}
+		page := PageData{}
 		fmt.Println("URL is new, following link")
 		cfg.pages[normalizedURL] = page
 		return true
 	}
 }
 
-func (cfg *config) addPageData(page MyPage) (err error) {
+func (cfg *config) addPageData(page PageData) (err error) {
+	cfg.mu.Lock()
+	defer cfg.mu.Unlock()
+	cfg.pages[page.URL] = page
+
+
 	return nil
 }
 

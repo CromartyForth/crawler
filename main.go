@@ -22,7 +22,7 @@ func main() {
 	fmt.Printf("starting crawl of: %v\n",os.Args[1])
 	
 	// make pages map
-	myPages := make(map[string]MyPage)
+	myPages := make(map[string]PageData)
 	
 	// make url.URL
 	myURL, err := url.Parse(os.Args[1])
